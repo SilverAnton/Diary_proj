@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "dayry-project"
+version = "0.1.0"
+description = ""
+authors = ["serebriakovanton <cu-hawk@yandex.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+django = "4.2"
+psycopg2-binary = "^2.9.9"
+pillow = "^10.4.0"
+black = "^24.8.0"
+ipython = "^8.27.0"
+redis = "^5.0.8"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

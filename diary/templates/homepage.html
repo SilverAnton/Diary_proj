@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to My Diary{% endblock %}
+
+{% block content %}
+    <div class="jumbotron text-center">
+        <h1 class="display-4">Welcome to My Diary</h1>
+        <p class="lead">Your personal space to track thoughts, memories, and more.</p>
+        <hr class="my-4">
+        <p>Get started by adding your first entry or exploring your existing ones.</p>
+        <a class="btn btn-primary btn-lg" href="{% url 'diary:entry_create' %}" role="button">Add New Entry</a>
+        <a class="btn btn-secondary btn-lg" href="{% url 'diary:entry_list' %}" role="button">View My Entries</a>
+    </div>
+{% endblock %}

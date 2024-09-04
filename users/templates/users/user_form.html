@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load my_tags %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <form method="post" enctype="multipart/form-data">
+        <div class="col-md-6 offset-md-3">
+            <div class="card mb-4 rounded-3 shadow-sm">
+                <div class="card-header text-center">
+                    <h1 class="display-6">{{ user.email }}</h1>
+                </div>
+                <div class="card-body text-center">
+                    <img src="{{ user.avatar | media_filter }}" class="img-thumbnail mb-3" alt="Profile Picture">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary w-100">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

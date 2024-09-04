@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ object.title }}</h1>
+    <p>{{ object.content }}</p>
+    <p class="text-muted">Last updated: {{ object.updated_at|date:"d M Y H:i" }}</p>
+
+    <a href="{% url 'diary:entry_update' object.pk %}" class="btn btn-warning">
+        <i class="bi bi-pencil"></i> Edit
+    </a>
+    <a href="{% url 'diary:entry_delete' object.pk %}" class="btn btn-danger">
+        <i class="bi bi-trash"></i> Delete
+    </a>
+    <a href="{% url 'diary:entry_list' %}" class="btn btn-secondary">Back to list</a>
+{% endblock %}

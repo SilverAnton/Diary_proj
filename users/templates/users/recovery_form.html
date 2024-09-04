@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Password Recovery{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <form method="post" enctype="multipart/form-data">
+        <div class="col-md-6 offset-md-3">
+            <div class="card mb-4 rounded-3 shadow-sm">
+                <div class="card-header text-center">
+                    <h1 class="display-6">Забыли пароль?</h1>
+                </div>
+                <div class="card-body">
+                    {% if error_message %}
+                        <div class="alert alert-danger">
+                            {{ error_message }}
+                        </div>
+                    {% else %}
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary w-100">Получить новый пароль</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
