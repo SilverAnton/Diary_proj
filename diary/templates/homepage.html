@@ -10,5 +10,62 @@
         <p>Get started by adding your first entry or exploring your existing ones.</p>
         <a class="btn btn-primary btn-lg" href="{% url 'diary:entry_create' %}" role="button">Add New Entry</a>
         <a class="btn btn-secondary btn-lg" href="{% url 'diary:entry_list' %}" role="button">View My Entries</a>
+        <a class="btn btn-primary btn-lg" href="#" id="add-memory-btn" role="button">Add New Memories</a>
     </div>
+
+    <!-- Всплывающее меню -->
+    <div id="memory-popup-menu" class="popup-menu">
+        <h4>Add Memory</h4>
+        <form id="memory-form" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="entry-select" class="form-label">Select Entry</label>
+                <select id="entry-select" name="entry" class="form-select"> <!-- Изменено на "entry" -->
+                    {% for entry in entries %}
+                        <option value="{{ entry.id }}">{{ entry.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="reminder-date" class="form-label">Reminder Date and Time</label>
+                <input type="datetime-local" id="reminder-date" name="reminder_date" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+
+    <!-- Подключение JS для всплывающего меню и AJAX -->
+    <script>
+        document.getElementById('add-memory-btn').addEventListener('click', function(event) {
+            event.preventDefault();
+            document.getElementById('memory-popup-menu').classList.toggle('active');
+        });
+
+        document.getElementById('memory-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            console.log('Form data:', Array.from(formData.entries())); // Вывод данных формы
+            fetch('{% url "memories:memory_create" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                    'X-Requested-With': 'XMLHttpRequest' // Этот заголовок добавлен
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Memory added successfully!');
+                    document.getElementById('memory-popup-menu').classList.remove('active');
+                } else {
+                    alert('Failed to add memory: ' + JSON.stringify(data.errors)); // Показать ошибки формы
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred.');
+            });
+        });
+    </script>
 {% endblock %}

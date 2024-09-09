@@ -6,12 +6,15 @@ from .models import Entry
 from .forms import EntryForm, SearchForm
 from django.db.models import Q
 
+
 class HomePageView(TemplateView):
     template_name = "homepage.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['entries'] = Entry.objects.all()
         return context
+
 
 # Просмотр всех записей
 class EntryListView(ListView):
@@ -33,10 +36,12 @@ class EntryListView(ListView):
         context['search_form'] = SearchForm(self.request.GET)
         return context
 
+
 # Просмотр одной записи
 class EntryDetailView(DetailView):
     model = Entry
     template_name = 'diary/entry_detail.html'
+
 
 # Создание новой записи
 class EntryCreateView(CreateView):
@@ -49,12 +54,14 @@ class EntryCreateView(CreateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
+
 # Редактирование записи
 class EntryUpdateView(UpdateView):
     model = Entry
     form_class = EntryForm
     template_name = 'diary/entry_form.html'
     success_url = reverse_lazy('diary:entry_list')
+
 
 # Удаление записи
 class EntryDeleteView(DeleteView):

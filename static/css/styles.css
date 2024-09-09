@@ -1,6 +1,67 @@
-body {
-    background: linear-gradient(to right, #f5f5f5, #e0e0e0),
-                linear-gradient(to bottom, #f5f5f5, #e0e0e0),
-                url('https://www.toptal.com/designers/subtlepatterns/patterns/diagonal-stripes.png');
-    background-size: cover, cover, 60px 60px;
+/* Стиль для формы отправки воспоминаний */
+.memory-form-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+}
+
+.memory-form-container h2 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.memory-form-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.memory-form-container form .form-group {
+    margin-bottom: 15px;
+}
+
+.memory-form-container form button {
+    align-self: flex-end;
+    margin-top: 10px;
+}
+
+/* Стиль для всплывающего меню */
+.popup-menu {
+    display: none;
+    position: fixed; /* Changed to fixed for better positioning */
+    top: 80px; /* Adjusted for better alignment */
+    right: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    z-index: 1000;
+    width: 300px; /* Set a fixed width for better layout */
+}
+
+.popup-menu.active {
+    display: block;
+}
+
+.popup-menu .form-group {
+    margin-bottom: 15px;
+}
+
+.popup-menu label {
+    font-weight: bold;
+}
+
+.popup-menu .btn-primary {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* Optional: Additional styling for the select dropdown */
+.popup-menu .form-select {
+    margin-bottom: 15px;
 }

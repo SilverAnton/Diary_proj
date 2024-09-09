@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from celery.schedules import crontab
 
 load_dotenv()
 
@@ -23,6 +24,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "users",
     "diary",
+    "django_celery_beat",
+    "memories",
 
 ]
 
@@ -135,4 +138,40 @@ if CACHE_ENABLED:
             "LOCATION": os.getenv('LOCATION'),
         }
     }
+#Celery
 
+CELERY_BEAT_SCHEDULE = {
+
+        'check-and-send-memories-every-minute': {
+            'task': 'memories.tasks.check_and_send_memories',
+            'schedule': crontab(minute='*/1'),  # Каждую минуту
+        },
+
+}
+
+# Настройки для Celery
+
+# URL-адрес брокера сообщений
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+
+# URL-адрес брокера результатов, также Redis
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
+
+# Часовой пояс для работы Celery
+CELERY_TIMEZONE = "UTC"
+
+# Флаг отслеживания выполнения задач
+CELERY_TASK_TRACK_STARTED = True
+
+# Максимальное время на выполнение задачи
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+# Telegram Bot Token
+# name SulverToneBot
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+
+TELEGRAM_CHAT_ID = -1002111429474
+
+USE_TZ = True
