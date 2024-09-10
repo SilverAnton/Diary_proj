@@ -7,13 +7,12 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv("SECRET_KEY")
 
-DEBUG = os.getenv('DEBUG', False) == 'True'
+DEBUG = os.getenv("DEBUG", False) == "True"
 
 ALLOWED_HOSTS = ["*"]
 
-# Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -26,7 +25,8 @@ INSTALLED_APPS = [
     "diary",
     "django_celery_beat",
     "memories",
-
+    "rest_framework",
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [
@@ -59,22 +59,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "diary_project.wsgi.application"
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     "default": {
-        "ENGINE": os.getenv('ENGINE'),
-        "NAME": os.getenv('NAME'),
-        "USER": os.getenv('POSTGRES_USER'),
-        "PASSWORD": os.getenv('PASSWORD'),
-        "HOST": os.getenv('HOST'),
-        "PORT": os.getenv('PORT'),
+        "ENGINE": os.getenv("ENGINE"),
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("POSTGRES_HOST"),
+        "PORT": os.getenv("POSTGRES_PORT"),
     }
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -90,7 +86,6 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-
 
 LANGUAGE_CODE = "en-us"
 
@@ -111,45 +106,47 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 AUTH_USER_MODEL = "users.User"
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = "users:login"
 
-LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = "/"
 
+LOGOUT_REDIRECT_URL = "/"
 
 # Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_PORT = os.getenv('EMAIL_PORT')
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', True) == 'True'
-EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', False) == 'True'
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", True) == "True"
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", False) == "True"
 
 SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-CACHE_ENABLED = os.getenv('CACHE_ENABLED', False) == 'True'
+CACHE_ENABLED = os.getenv("CACHE_ENABLED", False) == "True"
 
 if CACHE_ENABLED:
     CACHES = {
         "default": {
-            "BACKEND": os.getenv('BACKEND'),
-            "LOCATION": os.getenv('LOCATION'),
+            "BACKEND": os.getenv("BACKEND"),
+            "LOCATION": os.getenv("LOCATION"),
         }
     }
-#Celery
+# Celery
 
 CELERY_BEAT_SCHEDULE = {
-
-        'check-and-send-memories-every-minute': {
-            'task': 'memories.tasks.check_and_send_memories',
-            'schedule': crontab(minute='*/1'),  # Каждую минуту
-        },
-
+    "check-and-send-memories-every-minute": {
+        "task": "memories.tasks.check_and_send_memories",
+        "schedule": crontab(minute="*/1"),  # Каждую минуту
+    },
+    "deactivate-inactive-users-every-day": {
+        "task": "users.tasks.deactivate_inactive_users",
+        "schedule": crontab(hour=0, minute=0),  # Каждый день в полночь
+    },
 }
 
-# Настройки для Celery
 
 # URL-адрес брокера сообщений
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")

@@ -1,6 +1,3 @@
-# memories/models.py
-
-from django.db import models
 from users.models import User
 from diary.models import Entry
 
@@ -19,8 +16,8 @@ class Memory(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'Reminder for {self.entry.title} on {self.reminder_date}'
+        return f"Reminder for {self.entry.title} on {self.reminder_date}"
 
     class Meta:
-        verbose_name = 'Memory'
-        verbose_name_plural = 'Memories'
+        verbose_name = "Memory"
+        verbose_name_plural = "Memories"

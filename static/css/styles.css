@@ -1,3 +1,7 @@
+body {
+    background: linear-gradient(135deg, #f9f6f2, #dcd0c0);
+    background-attachment: fixed;
+}
 /* Стиль для формы отправки воспоминаний */
 .memory-form-container {
     max-width: 600px;
