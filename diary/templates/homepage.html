@@ -8,9 +8,44 @@
         <p class="lead">Your personal space to track thoughts, memories, and more.</p>
         <hr class="my-4">
         <p>Get started by adding your first entry or exploring your existing ones.</p>
-        <a class="btn btn-primary btn-lg" href="{% url 'diary:entry_create' %}" role="button">Add New Entry</a>
-        <a class="btn btn-secondary btn-lg" href="{% url 'diary:entry_list' %}" role="button">View My Entries</a>
-        <a class="btn btn-primary btn-lg" href="#" id="add-memory-btn" role="button">Add New Memories</a>
+        {% if user.is_authenticated %}
+            <a class="btn btn-primary btn-lg" href="{% url 'diary:entry_create' %}" role="button">Add New Entry</a>
+            <a class="btn btn-secondary btn-lg" href="{% url 'diary:entry_list' %}" role="button">View My Entries</a>
+            {% if entries.exists %}
+                <a class="btn btn-primary btn-lg" href="#" id="add-memory-btn" role="button">Add New Memories</a>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- Уведомление о необходимости добавить telegram_chat_id -->
+    {% if not has_telegram_chat_id %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Reminder:</strong> Please update your Telegram chat ID in your profile to receive memory reminders.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+    <!-- Рандомные записи дневника -->
+    <div class="random-entries my-5">
+        <div class="row justify-content-center">
+            {% for entry in random_entries %}
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ entry.title }}</h5>
+                            <p class="card-text">{{ entry.content|truncatewords:20 }}</p>
+                            {% if entry.memory_set.exists %}
+                                <p class="card-text">
+                                    <strong>Memory Set:</strong> {{ entry.memory_set.first.reminder_date }}
+                                </p>
+                            {% else %}
+                                <p class="card-text text-muted">No Memory Set</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 
     <!-- Всплывающее меню -->
@@ -20,7 +55,7 @@
             {% csrf_token %}
             <div class="mb-3">
                 <label for="entry-select" class="form-label">Select Entry</label>
-                <select id="entry-select" name="entry" class="form-select"> <!-- Изменено на "entry" -->
+                <select id="entry-select" name="entry" class="form-select">
                     {% for entry in entries %}
                         <option value="{{ entry.id }}">{{ entry.title }}</option>
                     {% endfor %}
@@ -42,24 +77,44 @@
         });
 
         document.getElementById('memory-form').addEventListener('submit', function(event) {
-            event.preventDefault();
+            event.preventDefault(); // Предотвращаем стандартную отправку формы
+
             var formData = new FormData(this);
-            console.log('Form data:', Array.from(formData.entries())); // Вывод данных формы
+            var hasTelegramChatId = {{ has_telegram_chat_id|lower }};
+
+            if (!hasTelegramChatId) {
+                // Предупреждение о необходимости добавить telegram_chat_id
+                var userConfirmed = confirm("You haven't set your Telegram chat ID. Do you want to continue?");
+
+                if (!userConfirmed) {
+                    // Если пользователь нажал "Отмена", перенаправляем на главную страницу
+                    window.location.href = "{% url 'diary:index' %}";
+                    return;
+                }
+            }
+
+            // Отправка формы
             fetch('{% url "memories:memory_create" %}', {
                 method: 'POST',
                 body: formData,
                 headers: {
                     'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
-                    'X-Requested-With': 'XMLHttpRequest' // Этот заголовок добавлен
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Memory added successfully!');
-                    document.getElementById('memory-popup-menu').classList.remove('active');
+                    // Успешное добавление воспоминания
+                    if (hasTelegramChatId) {
+                        alert('Memory added successfully!');
+                        window.location.href = "{% url 'diary:index' %}";
+                    } else {
+                        alert('Memory could not be added: Telegram chat ID is missing.');
+                    }
                 } else {
-                    alert('Failed to add memory: ' + JSON.stringify(data.errors)); // Показать ошибки формы
+                    // Не удалось добавить воспоминание
+                    alert('Memory could not be added: ' + JSON.stringify(data.errors));
                 }
             })
             .catch(error => {

@@ -4,9 +4,10 @@ from .models import Memory
 from .forms import MemoryForm
 from django.http import JsonResponse
 from django.urls import reverse
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
-class MemoryCreateView(CreateView):
+class MemoryCreateView(LoginRequiredMixin, CreateView):
     model = Memory
     form_class = MemoryForm
     template_name = "memories/memory_form.html"
@@ -31,14 +32,22 @@ class MemoryCreateView(CreateView):
         return reverse("diary:index")
 
 
-class MemoryUpdateView(UpdateView):
+class MemoryUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Memory
     form_class = MemoryForm
     template_name = "memories/memory_form.html"
     success_url = reverse_lazy("diary:entry_list")
 
+    def test_func(self):
+        entry = self.get_object()
+        return entry.user == self.request.user
 
-class MemoryDeleteView(DeleteView):
+
+class MemoryDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Memory
     template_name = "memories/memory_confirm_delete.html"
     success_url = reverse_lazy("diary:entry_list")
+
+    def test_func(self):
+        entry = self.get_object()
+        return entry.user == self.request.user

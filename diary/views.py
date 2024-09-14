@@ -11,6 +11,9 @@ from .models import Entry
 from .forms import EntryForm, SearchForm
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count
+from random import sample
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
 class HomePageView(LoginRequiredMixin, TemplateView):
@@ -19,14 +22,20 @@ class HomePageView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            context["entries"] = Entry.objects.filter(user=self.request.user)
+            entries = Entry.objects.filter(user=self.request.user)
+            context["entries"] = entries
+            if entries.exists():
+                random_entries = sample(list(entries), min(3, entries.count()))
+                context["random_entries"] = random_entries
+            context["has_telegram_chat_id"] = bool(self.request.user.telegram_chat_id)
         else:
             context["entries"] = []
+            context["random_entries"] = []
+            context["has_telegram_chat_id"] = False
         return context
 
-
 # Просмотр всех записей
-class EntryListView(ListView):
+class EntryListView(LoginRequiredMixin, ListView):
     model = Entry
     template_name = "diary/entry_list.html"
     context_object_name = "entries"
@@ -47,13 +56,17 @@ class EntryListView(ListView):
 
 
 # Просмотр одной записи
-class EntryDetailView(DetailView):
+class EntryDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Entry
     template_name = "diary/entry_detail.html"
 
+    def test_func(self):
+        entry = self.get_object()
+        return entry.user == self.request.user
+
 
 # Создание новой записи
-class EntryCreateView(CreateView):
+class EntryCreateView(LoginRequiredMixin, CreateView):
     model = Entry
     form_class = EntryForm
     template_name = "diary/entry_form.html"
@@ -65,15 +78,23 @@ class EntryCreateView(CreateView):
 
 
 # Редактирование записи
-class EntryUpdateView(UpdateView):
+class EntryUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Entry
     form_class = EntryForm
     template_name = "diary/entry_form.html"
     success_url = reverse_lazy("diary:entry_list")
 
+    def test_func(self):
+        entry = self.get_object()
+        return entry.user == self.request.user
+
 
 # Удаление записи
-class EntryDeleteView(DeleteView):
+class EntryDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Entry
     template_name = "diary/entry_confirm_delete.html"
     success_url = reverse_lazy("diary:entry_list")
+
+    def test_func(self):
+        entry = self.get_object()
+        return entry.user == self.request.user

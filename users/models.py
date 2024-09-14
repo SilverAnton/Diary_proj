@@ -40,6 +40,7 @@ class User(AbstractUser):
         max_length=100, verbose_name="token", null=True, blank=True
     )
     is_active = models.BooleanField(default=True, verbose_name="is_active")
+    telegram_chat_id = models.CharField(max_length=155, verbose_name="telegram_chat_id", null=True, blank=True)
 
     objects = UserManager()
 

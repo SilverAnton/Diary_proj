@@ -22,13 +22,13 @@ class StyleFormMixin:
 class UserRegisterForm(StyleFormMixin, UserCreationForm):
     class Meta:
         model = User
-        fields = ["email", "password1", "password2"]
+        fields = ["email", "password1", "password2", "telegram_chat_id"]
 
 
 class UserUpdateForm(StyleFormMixin, UserChangeForm):
     class Meta:
         model = User
-        fields = ["email", "phone", "avatar", "country"]
+        fields = ["email", "phone", "avatar", "country", "telegram_chat_id"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
