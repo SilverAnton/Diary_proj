@@ -17,10 +17,15 @@ from django.contrib.auth.views import LoginView
 
 
 class CustomLoginView(LoginView):
+    model = User
+    template_name = "users/login.html"
+    success_url = reverse_lazy("diary:index")
+
     def form_valid(self, form):
         user = form.get_user()
-        if not user.is_active:
+        if not user.is_active and user.auto_deactivated:
             user.is_active = True
+            user.auto_deactivated = False
             user.save()
             messages.info(self.request, "Your account has been activated.")
         login(self.request, user)

@@ -42,7 +42,7 @@ class EntryListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = Entry.objects.filter(user=self.request.user).order_by("-created_at")
-        query = self.request.GET.get("query")  # Измените 'q' на 'query'
+        query = self.request.GET.get("query")
         if query:
             queryset = queryset.filter(
                 Q(title__icontains=query) | Q(content__icontains=query)

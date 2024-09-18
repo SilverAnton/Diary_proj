@@ -41,7 +41,7 @@ class User(AbstractUser):
     )
     is_active = models.BooleanField(default=True, verbose_name="is_active")
     telegram_chat_id = models.CharField(max_length=155, verbose_name="telegram_chat_id", null=True, blank=True)
-
+    auto_deactivated = models.BooleanField(default=False, verbose_name="deactivated", null=True, blank=True)
     objects = UserManager()
 
     USERNAME_FIELD = "email"
