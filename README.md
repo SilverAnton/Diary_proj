@@ -67,7 +67,12 @@ docker-compose up --build
 
 Создайте суперпользователя:
 ```bash
-docker-compose exec web python manage.py createsuperuser
+docker-compose exec app python manage.py createsuperuser
+```
+
+Создайте нового пользователя используя команду из приложения users:
+```bash
+docker exec -it diary_proj-app-1 python manage.py cu
 ```
 
 ## Структура проекта
